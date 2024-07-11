@@ -12,29 +12,8 @@ permissions:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        versions: ["8.2", "8.3"]
-        archs: ["amd64"]
-        debug_flag: ["", "-debug"]
-        optimize_flag: ["-noopt", "", "-opt"]
-        include:
-          - debug_flag: ""
-            debug_options: ""
-          - debug_flag: "-debug"
-            debug_options: "--enable-debug"
-          - optimize_flag: "-noopt"
-            optimize_options_c_cpp: "-O0"
-            optimize_options_ld: "-O0"
-          - optimize_flag: ""
-            optimize_options_c_cpp: "-O2"
-            optimize_options_ld: "-O1"
-          - optimize_flag: "-opt"
-            optimize_options_c_cpp: "-O3"
-            optimize_options_ld: "-O2"
     runs-on: ubuntu-latest
     steps:
       - name: test
         run: |
-          echo "image:${{matrix.versions}}${{matrix.debug_flag}}${{matrix.optimize_flag}}"
-          echo "C/CPPFLAGS: ${{matrix.optimize_options_c_cpp}} LDFLAGS=${{matrix.optimize_options_ld}} debug: ${{matrix.debug_options}}"
+          echo "values=foo${{ !startsWith(github.ref, 'refs/tags/') && ',bar' || '' }}"
