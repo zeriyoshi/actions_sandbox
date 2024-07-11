@@ -16,18 +16,20 @@ jobs:
     outputs:
       variant_directories: ${{ steps.variants.outputs.directories }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Get variants directories
         id: variants
         run: |
-          echo "$(ls -d variants/* | jq -R -s -c '{"directory": split("\n")[:-1]}')"
-  #         echo "directories=$(ls -d variants/* | jq -R -s -c '{"directory": split("\n")[:-1]}')" > $GITHUB_OUTPUT
-  # second:
-  #   needs: first
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix: ${{ fromJson(needs.first.outputs.variant_directories) }}
-  #   steps:
-  #     - name: BONGO ${{ matrix.directory }}
-  #       working-directory: "${{ matrix.directory }}"
-  #       run: |
-  #         ls -al
+          echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')"
+  second:
+    needs: first
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory: ${{ fromJson(needs.first.outputs.variant_directories) }}
+    steps:
+      - name: BONGO ${{ matrix.directory }}
+        working-directory: "variants/${{ matrix.directory }}"
+        run: |
+          ls -al
