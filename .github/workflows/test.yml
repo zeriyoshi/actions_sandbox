@@ -29,7 +29,9 @@ jobs:
       matrix:
         directory: ${{ fromJson(needs.first.outputs.variant_directories) }}
     steps:
-      - name: BONGO ${{ matrix.directory }}
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: BONGO
         working-directory: ${{ matrix.directory }}
         run: |
           ls -al
