@@ -21,7 +21,7 @@ jobs:
       - name: Get variants directories
         id: variants
         run: |
-          echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')"
+          echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
   second:
     needs: first
     runs-on: ubuntu-latest
