@@ -30,6 +30,6 @@ jobs:
         directory: ${{ fromJson(needs.first.outputs.variant_directories) }}
     steps:
       - name: BONGO ${{ matrix.directory }}
-        working-directory: "variants/${{ matrix.directory }}"
+        working-directory: ${{ matrix.directory }}
         run: |
           ls -al
