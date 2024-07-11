@@ -21,7 +21,7 @@ jobs:
           echo "export_matrix=$(echo "${EXPORT_MATRIX}" | jq -c .)" >> $GITHUB_OUTPUT
     outputs:
       variant_directories: ${{ steps.describe.outputs.directories }}
-      export_matrix: ${{ steps.describe.outputs.matrix }}
+      export_matrix: ${{ steps.describe.outputs.export_matrix }}
   second:
     needs: first
     runs-on: ubuntu-latest
