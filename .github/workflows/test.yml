@@ -12,23 +12,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Get variants directories
-        id: variants
+      - name: Describe
+        id: describe
         run: |
           echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+          echo "matrix=${{ toJson(matrix) }}"
     outputs:
-      variant_directories: ${{ steps.variants.outputs.directories }}
-      matrix: ${{ toJson(matrix) }}
+      variant_directories: ${{ steps.describe.outputs.directories }}
+      foo: ${{ steps.describe.outputs.matrix }}
   second:
     needs: first
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        foo: ${{ fromJson(needs.first.outputs.foo) }}
+      matrix: ${{ fromJson(needs.first.outputs.foo) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: BONGO
-        working-directory: ${{ matrix.directory }}
         run: |
           echo "${{ matrix.foo }}"
