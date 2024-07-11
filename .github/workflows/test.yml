@@ -1,4 +1,4 @@
-name: Build image
+name: Test
 
 on:
   push:
@@ -11,13 +11,20 @@ permissions:
   packages: write
 
 jobs:
-  build:
+  first:
     runs-on: ubuntu-latest
     steps:
-      - name: Get Debian version
-        id: debian_version
+      - name: Get variants directories
+        id: variants
         run: |
-          echo "id=$(docker run --rm -i "ghcr.io/distroless-php/image:8.2-opt-base" sh -c '. /etc/os-release && echo ${VERSION_ID}')" >> $GITHUB_OUTPUT
-      - name: bongo
+          echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')"
+  second:
+    needs: first
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory: ${{ fromJson(needs.first.outputs.directories) }}
+    steps:
+      - name: BONGO ${{ matrix.directory }}
         run: |
-          echo "${{ steps.debian_version.outputs.id }}"
+          ls -al "variants/${{ matrix.directory }}"
