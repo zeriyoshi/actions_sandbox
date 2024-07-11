@@ -17,6 +17,7 @@ jobs:
         env:
           MATRIX: ${{ toJson(matrix) }}
         run: |
+          echo "${MATRIX}"
           echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
           echo "matrix=$(echo "${MATRIX}" | jq -c .)" >> $GITHUB_OUTPUT
     outputs:
