@@ -3,18 +3,12 @@ name: Test
 on:
   push:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-permissions:
-  packages: write
-
 jobs:
   first:
     runs-on: ubuntu-latest
-    outputs:
-      variant_directories: ${{ steps.variants.outputs.directories }}
+    strategy:
+      matrix:
+        foo: ["bongo", "conga"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,16 +16,20 @@ jobs:
         id: variants
         run: |
           echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+    outputs:
+      variant_directories: ${{ steps.variants.outputs.directories }}
+      foo: ${{ toJson(matrix.foo) }}
   second:
     needs: first
     runs-on: ubuntu-latest
     strategy:
       matrix:
         directory: ${{ fromJson(needs.first.outputs.variant_directories) }}
+        foo: ${{ fromJson(needs.first.outputs.foo) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: BONGO
         working-directory: ${{ matrix.directory }}
         run: |
-          ls -al
+          echo "${{ matrix.foo }}"
