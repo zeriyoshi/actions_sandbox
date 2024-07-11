@@ -27,7 +27,8 @@ jobs:
     needs: first
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJson(needs.first.outputs.foo) }}
+      matrix: 
+        foo: ${{ fromJson(needs.first.outputs.foo) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
