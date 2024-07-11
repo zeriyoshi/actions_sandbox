@@ -14,9 +14,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Describe
         id: describe
+        env:
+          MATRIX: ${{ toJson(matrix) }}
         run: |
           echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
-          echo "matrix=$(echo "${{ toJson(matrix) }}" | jq -c .)" >> $GITHUB_OUTPUT
+          echo "matrix=$(echo "${MATRIX}" | jq -c .)" >> $GITHUB_OUTPUT
     outputs:
       variant_directories: ${{ steps.describe.outputs.directories }}
       foo: ${{ steps.describe.outputs.matrix }}
