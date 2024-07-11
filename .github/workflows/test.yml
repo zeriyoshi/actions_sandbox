@@ -15,20 +15,18 @@ jobs:
       - name: Describe
         id: describe
         env:
-          MATRIX: ${{ toJson(matrix) }}
+          EXPORT_MATRIX: ${{ toJson(matrix) }}
         run: |
-          echo "${MATRIX}" | jq -c .
           echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
-          echo "matrix=$(echo "${MATRIX}" | jq -c .)" >> $GITHUB_OUTPUT
+          echo "export_matrix=$(echo "${EXPORT_MATRIX}" | jq -c .)" >> $GITHUB_OUTPUT
     outputs:
       variant_directories: ${{ steps.describe.outputs.directories }}
-      foo: ${{ steps.describe.outputs.matrix }}
+      export_matrix: ${{ steps.describe.outputs.matrix }}
   second:
     needs: first
     runs-on: ubuntu-latest
     strategy:
-      matrix: 
-        foo: ${{ fromJson(needs.first.outputs.foo) }}
+      matrix: ${{ fromJson(needs.first.outputs.export_matrix) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
