@@ -21,4 +21,4 @@ jobs:
           echo "short=\"$(whoami)\"" >> $GITHUB_OUTPUT
       - name: second
         run: |
-          echo "${{ steps.first.outputs.full }}${{ !startsWith(github.ref, 'refs/tags/') && format(',{0}', steps.first.outputs.short) || '' }}"
+          echo "${{ steps.first.outputs.full }}${{ !startsWith(github.ref, 'refs/tags/') && steps.first.outputs.short || '' }}"
