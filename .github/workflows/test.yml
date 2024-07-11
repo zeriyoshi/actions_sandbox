@@ -16,7 +16,7 @@ jobs:
         id: describe
         run: |
           echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
-          echo "matrix=${{ toJson(matrix) }}"
+          echo "matrix=${{ toJson(matrix) }}" >> $GITHUB_OUTPUT
     outputs:
       variant_directories: ${{ steps.describe.outputs.directories }}
       foo: ${{ steps.describe.outputs.matrix }}
