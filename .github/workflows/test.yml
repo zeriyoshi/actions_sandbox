@@ -13,6 +13,8 @@ permissions:
 jobs:
   first:
     runs-on: ubuntu-latest
+    outputs:
+      variant_directories: ${{ steps.variants.outputs.directories }}
     steps:
       - name: Get variants directories
         id: variants
@@ -23,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        directory: ${{ fromJson(needs.first.outputs.directories) }}
+        directory: ${{ fromJson(needs.first.outputs.variant_directories) }}
     steps:
       - name: BONGO ${{ matrix.directory }}
         run: |
