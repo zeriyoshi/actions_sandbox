@@ -29,6 +29,20 @@ jobs:
     outputs:
       directories: ${{ steps.describe.outputs.directories }}
   third:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        variants: [1, 2, 3, 4, 5]
+    steps:
+      - run: |
+          echo "${{ matrix.variants }}" > "output_${{ matrix.variants }}.txt"
+  fourth:
+    needs: third
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          cat output_*.txt
+  fifth:
     needs: ["first", "second"]
     uses: ./.github/workflows/reuse.yml
     with:
