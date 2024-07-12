@@ -35,6 +35,7 @@ jobs:
     steps:
       - env:
           RESULT: ${{ needs.mixin.outputs.values }}
+        id: variants
         run: |
           echo "values=${RESULT}" >> $GITHUB_OUTPUT
     outputs:
