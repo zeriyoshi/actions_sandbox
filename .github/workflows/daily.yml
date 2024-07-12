@@ -22,4 +22,4 @@ jobs:
     steps:
       - name: test
         run: |
-          echo "${{ fromJson(matrix) }}"
+          echo "${{ toJson(matrix) }}"
