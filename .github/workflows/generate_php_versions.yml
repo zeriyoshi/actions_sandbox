@@ -37,7 +37,7 @@ jobs:
         if: ${{ inputs.ignore_versions != '' }}
         run: |
           cp "versions.txt" "versions.txt.bak"
-          jq --argfilter "${{ inputs.ignore_versions }}" -R 'inputs as $line | if ($filter | fromjson | map($line | contains(.)) | any) then empty else $line end' "versions.txt.bak" > "versions.txt"
+          jq --argjson "filter" "${{ inputs.ignore_versions }}" -R 'inputs as $line | if ($filter | fromjson | map($line | contains(.)) | any) then empty else $line end' "versions.txt.bak" > "versions.txt"
           rm "versions.txt.bak"
       - name: Generate version and hash list
         run: |
@@ -59,6 +59,6 @@ jobs:
               optimize_options_c_cpp: "-O3"
               optimize_options_ld: "-O2"
           EOF
-          echo values=$(jq --argjson mixin "$(cat "mixin.json")" '[.[] | $mixin[] as $y | . + $y]' "version_and_hash.json") >> $GITHUB_OUTPUT
+          echo values=$(jq --argjson "mixin" "$(cat "mixin.json")" '[.[] | $mixin[] as $y | . + $y]' "version_and_hash.json") >> $GITHUB_OUTPUT
     outputs:
       matrix_include: ${{ steps.matrix_include.outputs.values }}
