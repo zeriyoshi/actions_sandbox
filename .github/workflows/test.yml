@@ -9,12 +9,14 @@ jobs:
     steps:
       - name: Generate matrix
         id: generate_matrix
+        env:
+          gm_foo: '["bongo", "conga"]'
+          gm_bar: '["qongo", "dongo"]'
         run: |
-          echo "foo=[\"bongo\", \"conga\"]" >> $GITHUB_OUTPUT
-          echo "bar=[\"qongo\", \"dongo\"]" >> $GITHUB_OUTPUT
+          printenv | grep -E '^gm_' | sed 's/^gm_//g' >> $GITHUB_OUTPUT
     outputs:
-      foo: ${{ steps.generate_matrix.foo }}
-      bar: ${{ steps.generate_matrix.bar }}
+      foo: ${{ steps.generate_matrix.outputs.foo }}
+      bar: ${{ steps.generate_matrix.outputs.bar }}
   second:
     needs: first
     runs-on: ubuntu-latest
