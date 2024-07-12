@@ -4,19 +4,37 @@ on:
   push:
 
 jobs:
-  test:
+  prepare:
     runs-on: ubuntu-latest
     steps:
+      - name: Get supported PHP versions
+        run: |
+          echo "supported_versions=$(curl -sSL "https://www.php.net/releases/index.php?json" | jq -c "[..| objects | .supported_versions? // empty] | flatten")" >> $GITHUB_OUTPUTS
       - name: Get PHP tags
         id: php_tags
-        uses: octokit/request-action@v2.x
+        uses: octokit/request-action@v2
         with:
           route: GET /repos/php/php-src/git/matching-refs/tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Determine
+      - name: Determine versions
         run: |
-          echo "${{ steps.php_tags.outputs.data }}"
+          echo "${{ steps.php_tags.outputs.data }}" | jq -r '.[] | (.ref | sub("refs/tags/"; "")) + " " + .object.sha'
+
+# jobs:
+#   test:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Get PHP tags
+#         id: php_tags
+#         uses: octokit/request-action@v2.x
+#         with:
+#           route: GET /repos/php/php-src/git/matching-refs/tags
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#       - name: Determine
+#         run: |
+#           echo "${{ steps.php_tags.outputs.data }}"
   # first:
   #   runs-on: ubuntu-latest
   #   steps:
