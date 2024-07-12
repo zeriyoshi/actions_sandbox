@@ -3,10 +3,13 @@ name: Conga
 on:
   workflow_call:
     inputs:
-      directories:
+      foo:
         required: true
         type: string
-      foo:
+      bar:
+        required: true
+        type: string
+      directories:
         required: true
         type: string
 
@@ -16,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        foo: ${{ fromJson(inputs.foo) }}
+        bar: ${{ fromJson(inputs.bar) }}
         directories: ${{ fromJson(inputs.directories) }}
     steps:
       - name: Checkout
@@ -23,4 +28,5 @@ jobs:
       - name: qongo
         working-directory: ${{ matrix.directories }}
         run: |
-          echo "$(pwd) | ${{ inputs.foo }}"
+          echo "$(pwd) | ${{ matrix.foo }} | ${{ matrix.bar }}"
+

@@ -6,9 +6,20 @@ on:
 jobs:
   first:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        foo: ["bongo", "conga"]
+    steps:
+      - name: Generate matrix
+        id: generate_matrix
+        env:
+          gm_foo: '["bongo", "conga"]'
+          gm_bar: '["qongo", "dongo"]'
+        run: |
+          printenv | grep -E '^gm_' | sed 's/^gm_//g' >> $GITHUB_OUTPUT
+    outputs:
+      foo: ${{ steps.generate_matrix.foo }}
+      bar: ${{ steps.generate_matrix.bar }}
+  second:
+    needs: first
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,10 +29,10 @@ jobs:
           echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
     outputs:
       directories: ${{ steps.describe.outputs.directories }}
-      foo: ${{ toJson(matrix) }}
-  second:
-    needs: first
+  third:
+    needs: ["first", "second"]
     uses: ./.github/workflows/reuse.yml
     with:
-      directories: ${{ needs.first.outputs.directories }}
       foo: ${{ needs.first.outputs.foo }}
+      bar: ${{ needs.first.outputs.bar }}
+      directories: ${{ needs.second.outputs.directories }}
