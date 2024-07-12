@@ -18,7 +18,7 @@ jobs:
           echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
     outputs:
       directories: ${{ steps.describe.outputs.directories }}
-      foo: ${{ toJson(strategy) }}
+      foo: ${{ toJson(matrix) }}
   second:
     needs: first
     uses: ./.github/workflows/reuse.yml
