@@ -16,24 +16,24 @@ jobs:
           echo "values=$(printenv | grep '^_gm_' | sed 's/^_gm_//' | jq -R 'split("=") | {(.[0]): .[1]}' | jq -s -c 'add')"
     outputs:
       values: ${{ steps.generate_matrix.outputs.values }}
-  second:
-    needs: first
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Describe
-        id: describe
-        run: |
-          echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
-    outputs:
-      directories: ${{ steps.describe.outputs.directories }}
+  # second:
+  #   needs: first
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #     - name: Describe
+  #       id: describe
+  #       run: |
+  #         echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+  #   outputs:
+  #     directories: ${{ steps.describe.outputs.directories }}
   test:
-    needs: ["first", "second"]
+    needs: ["first"]
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo "${{ fromJson(needs.first.outputs.values).foo }}"
+          echo "${{ join(fromJson(needs.first.outputs.values).*) }}"
   # third:
   #   needs: ["first", "second"]
   #   uses: ./.github/workflows/reuse.yml
