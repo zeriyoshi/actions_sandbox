@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo "${{ join(fromJson(needs.first.outputs.values).*) }}"
+          echo "${{ needs.first.outputs.values }}"
   # third:
   #   needs: ["first", "second"]
   #   uses: ./.github/workflows/reuse.yml
