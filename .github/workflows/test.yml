@@ -13,31 +13,25 @@ jobs:
           _gm_foo: '["bongo", "conga"]'
           _gm_bar: '["qongo", "dongo"]'
         run: |
-          echo "values=$(printenv | grep '^_gm_' | sed 's/^_gm_//' | jq -R 'split("=") | {(.[0]): .[1]}' | jq -s -c 'add')"
+          echo "values=$(printenv | grep '^_gm_' | sed 's/^_gm_//' | jq -R 'split("=") | {(.[0]): .[1]}' | jq -s -c 'add')" >> $GITHUB_OUTPUT
     outputs:
       values: ${{ steps.generate_matrix.outputs.values }}
-  # second:
-  #   needs: first
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #     - name: Describe
-  #       id: describe
-  #       run: |
-  #         echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
-  #   outputs:
-  #     directories: ${{ steps.describe.outputs.directories }}
-  test:
-    needs: ["first"]
+  second:
+    needs: first
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo "${{ needs.first.outputs.values }}"
-  # third:
-  #   needs: ["first", "second"]
-  #   uses: ./.github/workflows/reuse.yml
-  #   with:
-  #     foo: ${{ toJson(fromJson(needs.first.outputs.values).foo) }}
-  #     bar: ${{ toJson(fromJson(needs.first.outputs.values).bar) }}
-  #     directories: ${{ needs.second.outputs.directories }}
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Describe
+        id: describe
+        run: |
+          echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+    outputs:
+      directories: ${{ steps.describe.outputs.directories }}
+  third:
+    needs: ["first", "second"]
+    uses: ./.github/workflows/reuse.yml
+    with:
+      foo: ${{ toJson(fromJson(needs.first.outputs.values).foo) }}
+      bar: ${{ toJson(fromJson(needs.first.outputs.values).bar) }}
+      directories: ${{ needs.second.outputs.directories }}
