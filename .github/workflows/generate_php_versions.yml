@@ -37,7 +37,7 @@ jobs:
         if: ${{ inputs.ignore_versions != '' }}
         run: |
           cp "versions.txt" "versions.txt.bak"
-          jq --argjson "filter" "${{ inputs.ignore_versions }}" -R 'inputs as $line | if ($filter | fromjson | map($line | contains(.)) | any) then empty else $line end' "versions.txt.bak" > "versions.txt"
+          jq --arg "filter" "${{ inputs.ignore_versions }}" -R 'inputs as $line | if ($filter | fromjson | map($line | contains(.)) | any) then empty else $line end' "versions.txt.bak" > "versions.txt"
           rm "versions.txt.bak"
       - name: Generate version and hash list
         run: |
