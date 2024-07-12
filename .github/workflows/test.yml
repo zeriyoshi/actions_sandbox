@@ -28,10 +28,16 @@ jobs:
           echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
     outputs:
       directories: ${{ steps.describe.outputs.directories }}
-  third:
+  test:
     needs: ["first", "second"]
-    uses: ./.github/workflows/reuse.yml
-    with:
-      foo: ${{ toJson(fromJson(needs.first.outputs.values).foo) }}
-      bar: ${{ toJson(fromJson(needs.first.outputs.values).bar) }}
-      directories: ${{ needs.second.outputs.directories }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "${{ fromJson(needs.first.outputs.values).foo }}"
+  # third:
+  #   needs: ["first", "second"]
+  #   uses: ./.github/workflows/reuse.yml
+  #   with:
+  #     foo: ${{ toJson(fromJson(needs.first.outputs.values).foo) }}
+  #     bar: ${{ toJson(fromJson(needs.first.outputs.values).bar) }}
+  #     directories: ${{ needs.second.outputs.directories }}
