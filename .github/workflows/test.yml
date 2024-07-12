@@ -19,7 +19,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Determine versions
         run: |
-          echo "${{ steps.php_tags.outputs.data }}" | jq -r '.[] | (.ref | sub("refs/tags/"; "")) + " " + .object.sha'
+          echo "${{ steps.php_tags.outputs.data }}" > "test.json"
+          jq -r '.[] | (.ref | sub("refs/tags/"; "")) + " " + .object.sha' "test.json"
 
 # jobs:
 #   test:
