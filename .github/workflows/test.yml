@@ -34,12 +34,16 @@ jobs:
       matrix:
         variants: [1, 2, 3, 4, 5]
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - run: |
           echo "${{ matrix.variants }}" > "output_${{ matrix.variants }}.txt"
   fourth:
     needs: third
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - run: |
           cat output_*.txt
   fifth:
