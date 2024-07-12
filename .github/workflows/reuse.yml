@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        include: ${{ inputs.version_and_hash }}
+        include: ${{ fromJson(inputs.version_and_hash) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
