@@ -14,18 +14,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Describe
         id: describe
-        env:
-          EXPORT_MATRIX: ${{ toJson(matrix) }}
         run: |
           echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
-          echo "export_matrix=$(echo "${EXPORT_MATRIX}" | jq -c .)" >> $GITHUB_OUTPUT
-    outputs:
-      variant_directories: ${{ steps.describe.outputs.directories }}
-      export_matrix: ${{ steps.describe.outputs.export_matrix }}
-  second:
-    needs: first
-    runs-on: ubuntu-latest
-    steps:
-      - name: BONGO
-        run: |
-          echo "${{ needs.first.outputs.export_matrix }}"
+      - name: Reuse
+        uses: "./.github/actions/reuse.yml"
+        with:
+          directories: ${{ toJson(steps.describe.outputs.directories) }}
+          foo: ${{ matrix.foo }}
