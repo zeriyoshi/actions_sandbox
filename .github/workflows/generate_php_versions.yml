@@ -8,9 +8,9 @@ on:
         required: false
         default: ""
     outputs:
-      matrix_include:
-        description: "matrix.include value for build action"
-        value: ${{ jobs.prepare.outputs.matrix_include }}
+      values:
+        description: "Result"
+        value: ${{ jobs.prepare.outputs.values }}
 
 jobs:
   prepare:
@@ -42,25 +42,8 @@ jobs:
             mv -f "${TEMPFILE}" "versions.txt"
           done
       - name: Generate version and hash list
+        id: result
         run: |
-          jq -R -s -c 'split("\n") | map(select(length > 0)) | map(split(" ")) | map({version: .[0], minor: (.[0] | split(".") | .[0:2] | join(".")), hash: .[1]})' "versions.txt" > "version_and_hash.json"
-      - name: Generate matrix include
-        id: matrix_include
-        run: |
-          yq -o=json << 'EOF' > "mixin.json"
-            - variant: ""
-              configure_append: ""
-              optimize_options_c_cpp: "-O2"
-              optimize_options_ld: "-O1"
-            - variant: "-debug"
-              configure_append: "--enable-debug"
-              optimize_options_c_cpp: "-O0"
-              optimize_options_ld: "-O0"
-            - variant: "-opt"
-              configure_append: ""
-              optimize_options_c_cpp: "-O3"
-              optimize_options_ld: "-O2"
-          EOF
-          echo values=$(jq --argjson "mixin" "$(cat "mixin.json")" '[.[] | $mixin[] as $y | . + $y]' "version_and_hash.json") >> $GITHUB_OUTPUT
+          echo values="$(jq -R -s -c 'split("\n") | map(select(length > 0)) | map(split(" ")) | map({version: .[0], minor: (.[0] | split(".") | .[0:2] | join(".")), hash: .[1]})' "versions.txt")" >> $GITHUB_OUTPUT
     outputs:
-      matrix_include: ${{ steps.matrix_include.outputs.values }}
+      values: ${{ steps.result.outputs.values }}
