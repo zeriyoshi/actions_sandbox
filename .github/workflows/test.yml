@@ -30,15 +30,16 @@ jobs:
       directories: ${{ steps.describe.outputs.directories }}
   third:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - foo: "1"
+            bar: "1"
+          - foo: "2"
+            bar: "2"
     steps:
-      - id: foo
-        run: |
-          echo "foo"
-          echo "valid=OK" >> $GITHUB_OUTPUT
       - run: |
-          echo "${{ steps.foo.outputs.invalid && format(',{0}', steps.foo.outputs.invalid) || 'invalid' }}"
-          echo "${{ steps.foo.outputs.valid && format(',{0}', steps.foo.outputs.valid) || '!?' }}"
-
+          echo "foo: ${{ matrix.foo }}, bar: ${{ matrix.bar }}"
   end:
     needs: ["first", "second"]
     uses: ./.github/workflows/reuse.yml
