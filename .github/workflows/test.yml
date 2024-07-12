@@ -15,8 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo "${{ needs.generate_php_versions_noparam.outputs.matrix_include }}"
-          echo "${{ needs.generate_php_versions_param.outputs.matrix_include}}"
+          echo "${{ needs.generate_php_versions_param.outputs.matrix_include }}"
 
 # jobs:
 #   prepare:
