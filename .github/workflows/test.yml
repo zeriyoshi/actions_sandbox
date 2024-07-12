@@ -29,7 +29,7 @@ jobs:
       - name: Generate matrix include
         id: matrix_include
         run: |
-          MIXIN_JSON=$(yq -o=json << 'MIXIN'
+          MIXIN=$(cat <<'EOF'
             - variant: ""
               configure_append: ""
               optimize_options_c_cpp: "-O2"
@@ -42,9 +42,10 @@ jobs:
               configure_append: ""
               optimize_options_c_cpp: "-O3"
               optimize_options_ld: "-O2"
-          MIXIN
+          EOF
           )
-          echo "${{ steps.version_and_hash.outputs.values }}" | jq --argjson mixin "${MIXIN_JSON}" '[.[] | $mixin[] as $y | . + $y]'
+          echo "${{ steps.version_and_hash.outputs.values }}" \
+          | jq --argjson mixin "$(echo "${MIXIN}" | yq -o=json)" '[.[] | $mixin[] as $y | . + $y]'
     outputs:
       version_and_hash: ${{ steps.version_and_hash.outputs.values }}
   kick:
