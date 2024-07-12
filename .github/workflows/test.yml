@@ -44,7 +44,7 @@ jobs:
           EOF
           )
           echo "${MIXIN}" | yq -o=json > "mixin.json"
-          echo "values=$(jq --argjson mixin "$(cat "mixin.json")" '[.[] | $mixin[] as $y | . + $y]' "version_and_hash.json")" >> $GITHUB_OUTPUT
+          echo values=$(jq --argjson mixin "$(cat "mixin.json")" '[.[] | $mixin[] as $y | . + $y]' "version_and_hash.json") >> $GITHUB_OUTPUT
     outputs:
       matrix_include: ${{ steps.matrix_include.outputs.values }}
   kick:
