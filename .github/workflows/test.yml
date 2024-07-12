@@ -26,12 +26,13 @@ jobs:
             | tail -n1 >> "versions.txt"
           done
           echo "values=$(jq -R -s -c 'split("\n") | map(select(length > 0)) | map(split(" ")) | map({version: .[0], hash: .[1]})' "versions.txt")" >> $GITHUB_OUTPUT
-      - name: result
-        run: |
-          echo "${{ steps.version_and_hash.outputs.values }}"
     outputs:
       version_and_hash: ${{ steps.version_and_hash.outputs.values }}
-
+  kick:
+    needs: prepare
+    uses: ./.github/workflows/reuse.yml
+    with:
+      version_and_hash: ${{ needs.prepare.outputs.version_and_hash }}
 # jobs:
 #   test:
 #     runs-on: ubuntu-latest

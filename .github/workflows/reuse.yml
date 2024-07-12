@@ -12,14 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        foo: ${{ fromJson(inputs.foo) }}
-        bar: ${{ fromJson(inputs.bar) }}
-        directories: ${{ fromJson(inputs.directories) }}
+        include: ${{ inputs.version_and_hash }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: qongo
-        working-directory: ${{ matrix.directories }}
         run: |
-          echo "$(pwd) | ${{ matrix.foo }} | ${{ matrix.bar }}"
+          echo "${{ matrix.version }} | ${{ matrix.hash }}"
+
 
