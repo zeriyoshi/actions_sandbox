@@ -36,9 +36,11 @@ jobs:
       - name: Filitering versions
         if: ${{ inputs.ignore_versions != '' }}
         run: |
-          cp "versions.txt" "versions.txt.bak"
-          jq --arg "filter" "${{ inputs.ignore_versions }}" -R 'inputs as $line | if ($filter | fromjson | map($line | contains(.)) | any) then empty else $line end' "versions.txt.bak" > "versions.txt"
-          rm "versions.txt.bak"
+          TEMPFILE="$(mktemp)"
+          echo "${{ inputs.ignore_versions }}" | jq -r '.[]' | while read IGNORE; do
+            grep -v "${IGNORE}" < "versions.txt" > "${TEMPFILE}"
+            mv -f "${TEMPFILE}" "versions.txt"
+          done
       - name: Generate version and hash list
         run: |
           jq -R -s -c 'split("\n") | map(select(length > 0)) | map(split(" ")) | map({version: .[0], minor: (.[0] | split(".") | .[0:2] | join(".")), hash: .[1]})' "versions.txt" > "version_and_hash.json"
