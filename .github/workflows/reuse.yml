@@ -3,7 +3,7 @@ name: Conga
 on:
   workflow_call:
     inputs:
-      version_and_hash:
+      matrix_include:
         required: true
         type: string
 
@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        include: ${{ fromJson(inputs.version_and_hash) }}
+        include: ${{ fromJson(inputs.matrix_include) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: qongo
         run: |
-          echo "${{ matrix.version }} | ${{ matrix.hash }}"
+          echo "${{ toJson(matrix) }}"
