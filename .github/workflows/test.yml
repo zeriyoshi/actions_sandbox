@@ -25,7 +25,24 @@ jobs:
             | sort -V \
             | tail -n1 >> "versions.txt"
           done
-          echo "values=$(jq -R -s -c 'split("\n") | map(select(length > 0)) | map(split(" ")) | map({version: .[0], hash: .[1]})' "versions.txt")" >> $GITHUB_OUTPUT
+          echo "values=$(jq -R -s -c 'split("\n") | map(select(length > 0)) | map(split(" ")) | map({version: .[0], minor: (.[0] | split(".") | .[0:2] | join(".")), hash: .[1]})' "versions.txt")" >> $GITHUB_OUTPUT
+      - name: Generate matrix include
+        id: matrix_include
+        run: |
+          yq -o=json << 'MIXIN'
+            - variant: ""
+              configure_append: ""
+              optimize_options_c_cpp: "-O2"
+              optimize_options_ld: "-O1"
+            - variant: "-debug"
+              configure_append: "--enable-debug"
+              optimize_options_c_cpp: "-O0"
+              optimize_options_ld: "-O0"
+            - variant: "-opt"
+              configure_append: ""
+              optimize_options_c_cpp: "-O3"
+              optimize_options_ld: "-O2"
+          MIXIN
     outputs:
       version_and_hash: ${{ steps.version_and_hash.outputs.values }}
   kick:

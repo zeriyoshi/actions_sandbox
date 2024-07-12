@@ -19,5 +19,3 @@ jobs:
       - name: qongo
         run: |
           echo "${{ matrix.version }} | ${{ matrix.hash }}"
-
-
