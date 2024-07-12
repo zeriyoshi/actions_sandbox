@@ -12,8 +12,7 @@ jobs:
         env:
           gm_foo: '["bongo", "conga"]'
         run: |
-          printenv | grep -E '^gm_' | sed 's/^gm_//g'
-          printenv | grep -E '^gm_' | sed 's/^gm_//g' >> $GITHUB_OUTPUT
+          echo "foo=${gm_foo}" >> $GITHUB_OUTPUT
     outputs:
       foo: ${{ steps.generate_matrix.foo }}
       bar: ${{ steps.generate_matrix.bar }}
