@@ -12,7 +12,15 @@ on:
 
 jobs:
   conga:
+    name: pongo
     runs-on: ubuntu-latest
-   steps:
+    strategy:
+      matrix:
+        directories: ${{ fromJson(inputs.directories) }}
+    steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: qongo
+        working-directory: ${{ matrix.directories }}
+        run: |
+          echo "$(pwd) | ${{ inputs.foo }}"
