@@ -4,53 +4,67 @@ on:
   push:
 
 jobs:
-  prepare:
+  generate_php_versions_noparam:
+    uses: ./.github/workflows/generate_php_versions.yml
+  generate_php_versions_param:
+    uses: ./.github/workflows/generate_php_versions.yml
+    with:
+      ignore_versions: '["8.1"]'
+  test:
+    needs: ["generate_php_versions_noparam", "generate_php_versions_param"]
     runs-on: ubuntu-latest
     steps:
-      - name: Get supported PHP versions
-        id: supported_versions
-        run: |
-          curl -sSL "https://www.php.net/releases/index.php?json" | jq -c "[..| objects | .supported_versions? // empty] | flatten" > "versions.json"
-      - name: Determine version and hash
-        run: |
-          curl -sSL \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/php/php-src/git/matching-refs/tags" > "tags.json"
-          jq -r '.[]' "versions.json" | while read VERSION; do
-            jq -r '.[] | (.ref | sub("refs/tags/php-"; "")) + " " + .object.sha' "tags.json" \
-            | grep -E "^${VERSION}\.[0-9]+ " \
-            | sort -V \
-            | tail -n1 >> "versions.txt"
-          done
-          jq -R -s -c 'split("\n") | map(select(length > 0)) | map(split(" ")) | map({version: .[0], minor: (.[0] | split(".") | .[0:2] | join(".")), hash: .[1]})' "versions.txt" > "version_and_hash.json"
-      - name: Generate matrix include
-        id: matrix_include
-        run: |
-          yq -o=json << 'EOF' > "mixin.json"
-            - variant: ""
-              configure_append: ""
-              optimize_options_c_cpp: "-O2"
-              optimize_options_ld: "-O1"
-            - variant: "-debug"
-              configure_append: "--enable-debug"
-              optimize_options_c_cpp: "-O0"
-              optimize_options_ld: "-O0"
-            - variant: "-opt"
-              configure_append: ""
-              optimize_options_c_cpp: "-O3"
-              optimize_options_ld: "-O2"
+      - run: |
+          echo "${{ needs.generate_php_versions_noparam.outputs.matrix_include }}"
+          echo "${{ needs.generate_php_versions_param.outputs.matrix_include}}"
 
-          EOF
-          echo values=$(jq --argjson mixin "$(cat "mixin.json")" '[.[] | $mixin[] as $y | . + $y]' "version_and_hash.json") >> $GITHUB_OUTPUT
-    outputs:
-      matrix_include: ${{ steps.matrix_include.outputs.values }}
-  kick:
-    needs: prepare
-    uses: ./.github/workflows/reuse.yml
-    with:
-      matrix_include: ${{ needs.prepare.outputs.matrix_include }}
+# jobs:
+#   prepare:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Get supported PHP versions
+#         id: supported_versions
+#         run: |
+#           curl -sSL "https://www.php.net/releases/index.php?json" | jq -c "[..| objects | .supported_versions? // empty] | flatten" > "versions.json"
+#       - name: Determine version and hash
+#         run: |
+#           curl -sSL \
+#             -H "Accept: application/vnd.github+json" \
+#             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+#             -H "X-GitHub-Api-Version: 2022-11-28" \
+#             "https://api.github.com/repos/php/php-src/git/matching-refs/tags" > "tags.json"
+#           jq -r '.[]' "versions.json" | while read VERSION; do
+#             jq -r '.[] | (.ref | sub("refs/tags/php-"; "")) + " " + .object.sha' "tags.json" \
+#             | grep -E "^${VERSION}\.[0-9]+ " \
+#             | sort -V \
+#             | tail -n1 >> "versions.txt"
+#           done
+#           jq -R -s -c 'split("\n") | map(select(length > 0)) | map(split(" ")) | map({version: .[0], minor: (.[0] | split(".") | .[0:2] | join(".")), hash: .[1]})' "versions.txt" > "version_and_hash.json"
+#       - name: Generate matrix include
+#         id: matrix_include
+#         run: |
+#           yq -o=json << 'EOF' > "mixin.json"
+#             - variant: ""
+#               configure_append: ""
+#               optimize_options_c_cpp: "-O2"
+#               optimize_options_ld: "-O1"
+#             - variant: "-debug"
+#               configure_append: "--enable-debug"
+#               optimize_options_c_cpp: "-O0"
+#               optimize_options_ld: "-O0"
+#             - variant: "-opt"
+#               configure_append: ""
+#               optimize_options_c_cpp: "-O3"
+#               optimize_options_ld: "-O2"
+#           EOF
+#           echo values=$(jq --argjson mixin "$(cat "mixin.json")" '[.[] | $mixin[] as $y | . + $y]' "version_and_hash.json") >> $GITHUB_OUTPUT
+#     outputs:
+#       matrix_include: ${{ steps.matrix_include.outputs.values }}
+#   kick:
+#     needs: prepare
+#     uses: ./.github/workflows/reuse.yml
+#     with:
+#       matrix_include: ${{ needs.prepare.outputs.matrix_include }}
 # jobs:
 #   test:
 #     runs-on: ubuntu-latest
