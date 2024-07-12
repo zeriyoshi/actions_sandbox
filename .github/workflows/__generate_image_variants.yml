@@ -36,6 +36,7 @@ jobs:
       base_json: ${{ needs.mixin_flag.outputs.values }}
       mixin_yaml: |
         - platform: "linux/amd64/v3"
+        - platform: "linux/arm64/v8"
   variants:
     needs: mixin_platforms
     runs-on: ubuntu-latest
