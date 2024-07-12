@@ -10,13 +10,11 @@ jobs:
       - name: Generate matrix
         id: generate_matrix
         env:
-          gm_foo: '["bongo", "conga"]'
-          gm_bar: '["qongo", "dongo"]'
+          _gm_foo: '["bongo", "conga"]'
+          _gm_bar: '["qongo", "dongo"]'
         run: |
-          printenv | grep -E '^gm_' | sed 's/^gm_//g' >> $GITHUB_OUTPUT
-    outputs:
-      foo: ${{ steps.generate_matrix.outputs.foo }}
-      bar: ${{ steps.generate_matrix.outputs.bar }}
+          echo "values=$(printenv | grep '^_gm_' | sed 's/^_gm_//' | jq -R 'split("=") | {(.[0]): .[1]}' | jq -s -c 'add')"
+    outputs: ${{ fromJson(steps.generate_matrix.outputs.values) }}
   second:
     needs: first
     runs-on: ubuntu-latest
@@ -29,18 +27,10 @@ jobs:
           echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
     outputs:
       directories: ${{ steps.describe.outputs.directories }}
-  test:
+  third:
     needs: ["first", "second"]
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo "foo: ${{ needs.first.outputs.foo }}"
-          echo "bar: ${{ needs.first.outputs.bar }}"
-          echo "directories: ${{ needs.second.outputs.directories }}"
-  # third:
-  #   needs: ["first", "second"]
-  #   uses: ./.github/workflows/reuse.yml
-  #   with:
-  #     foo: ${{ needs.first.outputs.foo }}
-  #     bar: ${{ needs.first.outputs.bar }}
-  #     directories: ${{ needs.second.outputs.directories }}
+    uses: ./.github/workflows/reuse.yml
+    with:
+      foo: ${{ needs.first.outputs.foo }}
+      bar: ${{ needs.first.outputs.bar }}
+      directories: ${{ needs.second.outputs.directories }}
