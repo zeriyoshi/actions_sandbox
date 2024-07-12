@@ -45,7 +45,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - run: |
-          cat output_*.txt
+          ls -alh
   fifth:
     needs: ["first", "second"]
     uses: ./.github/workflows/reuse.yml
