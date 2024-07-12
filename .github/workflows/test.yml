@@ -17,7 +17,7 @@ jobs:
         run: |
           echo "directories=$(ls -d variants/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
     outputs:
-      directories: ${{ toJson(steps.describe.outputs.directories) }}
+      directories: '["1", "2"]'
       foo: ${{ toJson(strategy) }}
   second:
     needs: first
