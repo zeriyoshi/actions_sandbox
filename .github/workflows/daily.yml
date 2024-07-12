@@ -29,10 +29,7 @@ jobs:
   result:
     needs: mixin
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include: ${{ fromJson(needs.mixin.outputs.values) }}
     steps:
       - name: test
         run: |
-          echo "${{ toJson(matrix) }}"
+          echo "${{ needs.mixin.outputs.values }}"
