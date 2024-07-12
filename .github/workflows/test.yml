@@ -11,7 +11,7 @@ jobs:
         id: supported_versions
         run: |
           echo "versions=$(curl -sSL "https://www.php.net/releases/index.php?json" | jq -c "[..| objects | .supported_versions? // empty] | flatten")" >> $GITHUB_OUTPUT
-      - name: Determine versions
+      - name: Determine version and hash
         id: version_and_hash
         run: |
           curl -sSL \
@@ -25,15 +25,13 @@ jobs:
             | sort -V \
             | tail -n1 >> "versions.txt"
           done
-          echo "values=$(cat "versions.txt" | jq -R -s -c 'split("\n") | map(select(. != "")) | map(split(" ") | {key: .[0], value: .[1]}) | from_entries')" >> $GITHUB_OUTPUT
+          echo "values=$(jq -R -s -c 'split("\n") | map(select(length > 0)) | map(split(" ")) | map({version: .[0], hash: .[1]})' "versions.txt")" >> $GITHUB_OUTPUT
+      - name: result
+        run: |
+          echo "${{ steps.version_and_hash.outputs.values }}"
     outputs:
       version_and_hash: ${{ steps.version_and_hash.outputs.values }}
-  kick:
-    needs: prepare
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo "${{ needs.prepare.outputs.version_and_hash }}"
+
 # jobs:
 #   test:
 #     runs-on: ubuntu-latest

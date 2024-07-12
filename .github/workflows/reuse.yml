@@ -3,19 +3,12 @@ name: Conga
 on:
   workflow_call:
     inputs:
-      foo:
-        required: true
-        type: string
-      bar:
-        required: true
-        type: string
-      directories:
+      version_and_hash:
         required: true
         type: string
 
 jobs:
   conga:
-    name: pongo
     runs-on: ubuntu-latest
     strategy:
       matrix:
