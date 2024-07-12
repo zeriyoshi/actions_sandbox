@@ -44,8 +44,10 @@ jobs:
               optimize_options_ld: "-O2"
           EOF
           )
-          echo "${{ steps.version_and_hash.outputs.values }}" \
-          | jq --argjson mixin "$(echo "${MIXIN}" | yq -o=json)" '[.[] | $mixin[] as $y | . + $y]'
+          echo "${MIXIN}"
+          echo "${MIXIN}" | yq -o=json
+          # echo "${{ steps.version_and_hash.outputs.values }}" \
+          # | jq --argjson mixin "$(echo "${MIXIN}" | yq -o=json)" '[.[] | $mixin[] as $y | . + $y]'
     outputs:
       version_and_hash: ${{ steps.version_and_hash.outputs.values }}
   kick:
