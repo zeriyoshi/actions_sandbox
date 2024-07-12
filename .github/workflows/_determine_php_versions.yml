@@ -1,4 +1,4 @@
-name: Generate PHP versions
+name: Determine PHP version and hash
 
 on:
   workflow_call:
@@ -10,10 +10,10 @@ on:
     outputs:
       values:
         description: "Result"
-        value: ${{ jobs.prepare.outputs.values }}
+        value: ${{ jobs.determine.outputs.values }}
 
 jobs:
-  prepare:
+  determine:
     runs-on: ubuntu-latest
     steps:
       - name: Get supported PHP versions

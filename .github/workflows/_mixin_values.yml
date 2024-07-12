@@ -1,4 +1,4 @@
-name: Mixin
+name: Mixin values
 
 on:
   workflow_call:
@@ -20,7 +20,7 @@ jobs:
     steps:
       - id: mixin
         env:
-          BASE: ${{ inputs.base_json}}
+          BASE: ${{ inputs.base_json }}
           MIXIN: ${{ inputs.mixin_yaml }}
         run: |
           echo "${BASE}" > "base.json"
