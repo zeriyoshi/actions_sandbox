@@ -37,7 +37,7 @@ jobs:
         if: ${{ inputs.ignore_versions != '' }}
         run: |
           echo "${{ inputs.ignore_versions }}" | jq -r '.[]' | while read TARGET; do
-            echo "$(cat "versions.txt")" | grep -v"${TARGET}" > "versions.txt"
+            echo "$(cat "versions.txt")" | grep -v "${TARGET}" > "versions.txt"
           done
       - name: Generate version and hash list
         run: |
