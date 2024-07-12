@@ -11,7 +11,6 @@ jobs:
         id: generate_matrix
         env:
           gm_foo: '["bongo", "conga"]'
-          gm_bar: '["qongo", "dongo"]'
         run: |
           printenv | grep -E '^gm_' | sed 's/^gm_//g' >> $GITHUB_OUTPUT
     outputs:
@@ -34,9 +33,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo "${{ needs.first.outputs.foo }}"
-          echo "${{ needs.first.outputs.bar }}"
-          echo "${{ needs.second.outputs.directories }}"
+          echo "foo: ${{ needs.first.outputs.foo }}"
+          echo "bar: ${{ needs.first.outputs.bar }}"
+          echo "directories: ${{ needs.second.outputs.directories }}"
   # third:
   #   needs: ["first", "second"]
   #   uses: ./.github/workflows/reuse.yml
