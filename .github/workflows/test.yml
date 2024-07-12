@@ -9,10 +9,9 @@ jobs:
     steps:
       - name: Generate matrix
         id: generate_matrix
-        env:
-          gm_foo: '["bongo", "conga"]'
         run: |
-          echo "foo=${gm_foo}" >> $GITHUB_OUTPUT
+          echo "foo=["bongo", "conga"]" >> $GITHUB_OUTPUT
+          echo "bar=["qongo", "dongo"]" >> $GITHUB_OUTPUT
     outputs:
       foo: ${{ steps.generate_matrix.foo }}
       bar: ${{ steps.generate_matrix.bar }}
