@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Get PHP tags
         id: php_tags
-        uses: octokit/request-action@v2
+        uses: octokit/request-action@v2.x
         with:
           route: GET /repos/php/php-src/git/matching-refs/tags
         env:
