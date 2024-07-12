@@ -32,6 +32,6 @@ jobs:
     needs: ["first", "second"]
     uses: ./.github/workflows/reuse.yml
     with:
-      foo: ${{ toJson(fromJson(needs.first.outputs.values).foo) }}
-      bar: ${{ toJson(fromJson(needs.first.outputs.values).bar) }}
+      foo: ${{ fromJson(needs.first.outputs.values).foo }}
+      bar: ${{ fromJson(needs.first.outputs.values).bar }}
       directories: ${{ needs.second.outputs.directories }}
