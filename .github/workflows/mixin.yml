@@ -20,8 +20,8 @@ jobs:
     steps:
       - id: mixin
         run: |
-          echo "${{ inputs.mixin_yaml }}" | yq -o=json > "mixin.json"
-          echo "${{ inputs.base_json }}" > "base.json"
+          echo ${{ inputs.mixin_yaml }} | yq -o=json > "mixin.json"
+          echo ${{ inputs.base_json }} > "base.json"
           jq --argjson "mixin" "$(cat "mixin.json")" '[.[] | $mixin[] as $y | . + $y]' "base.json"
           echo values=$(jq --argjson "mixin" "$(cat "mixin.json")" '[.[] | $mixin[] as $y | . + $y]' "base.json") >> $GITHUB_OUTPUT
     outputs:
