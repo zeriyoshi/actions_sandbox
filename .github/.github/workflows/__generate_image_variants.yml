@@ -12,7 +12,7 @@ on:
         value: ${{ jobs.variants.outputs.values }}
 
 jobs:
-  mixin:
+  mixin_flag:
     uses: ./.github/workflows/_mixin_values.yml
     with:
       base_json: ${{ inputs.php_versions_json }}
@@ -29,12 +29,19 @@ jobs:
           configure_append: ""
           optimize_options_c_cpp: "-O3"
           optimize_options_ld: "-O2"
+  mixin_platforms:
+    needs: mixin_flag
+    uses: ./.github/workflows/_mixin_values.yml
+    with:
+      base_json: ${{ needs.mixin_flag.outputs.values }}
+      mixin_yaml: |
+        - platform: "linux/amd64/v3"
   variants:
-    needs: mixin
+    needs: mixin_platforms
     runs-on: ubuntu-latest
     steps:
       - env:
-          RESULT: ${{ needs.mixin.outputs.values }}
+          RESULT: ${{ needs.mixin_platforms.outputs.values }}
         id: variants
         run: |
           echo "values=${RESULT}" >> $GITHUB_OUTPUT

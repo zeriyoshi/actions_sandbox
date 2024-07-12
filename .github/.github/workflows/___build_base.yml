@@ -3,9 +3,13 @@ name: Build base
 on:
   workflow_call:
     inputs:
-      version_and_hash:
-        required: true
+      image_variants:
         type: string
+        required: true
+      enable_minor:
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   packages: write

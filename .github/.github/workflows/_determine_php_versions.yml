@@ -44,6 +44,6 @@ jobs:
       - name: Generate version and hash list
         id: result
         run: |
-          echo values="$(jq -R -s -c 'split("\n") | map(select(length > 0)) | map(split(" ")) | map({version: .[0], minor: (.[0] | split(".") | .[0:2] | join(".")), hash: .[1]})' "versions.txt")" >> $GITHUB_OUTPUT
+          echo values="$(jq -R -s -c 'split("\n") | map(select(length > 0)) | map(split(" ")) | map({tag: .[0], minor: (.[0] | split(".") | .[0:2] | join(".")), hash: .[1]})' "versions.txt")" >> $GITHUB_OUTPUT
     outputs:
       values: ${{ steps.result.outputs.values }}
